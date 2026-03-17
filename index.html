@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>英語トレーニング 🏉🎣</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
+
+  :root {
+    --blue: #1a6fc4;
+    --blue-light: #e8f2fc;
+    --blue-dark: #0d4a8c;
+    --green: #2e9e5b;
+    --green-light: #e6f7ed;
+    --red: #d63b3b;
+    --red-light: #fdeaea;
+    --amber: #e07c00;
+    --amber-light: #fff4e0;
+    --gray: #f5f6f8;
+    --gray2: #e8eaed;
+    --text: #1a1c1e;
+    --text2: #555a62;
+    --text3: #8a9099;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 4px 24px rgba(0,0,0,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    background: #f0f4f8;
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: #f0f4f8;
+    position: relative;
+  }
+
+  .screen { display: none; padding: 16px; padding-bottom: 32px; }
+  .screen.active { display: block; }
+
+  /* HOME */
+  .home-header {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    color: white;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-header::before {
+    content: '🏉';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 52px;
+    opacity: 0.25;
+  }
+  .home-header h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .home-header p { font-size: 13px; opacity: 0.85; }
+
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text2);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    background: var(--gray2);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #4fa3f7);
+    border-radius: 5px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .stat {
+    background: white;
+    border-radius: var(--radius-sm);
+    padding: 12px 8px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-val { font-family: 'Nunito', sans-serif; font-size: 24px; font-weight: 800; color: var(--blue); }
+  .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .phase-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    border: 1.5px solid var(--gray2);
+    background: white;
+  }
+  .phase-item.active { border-color: var(--blue); background: var(--blue-light); }
+  .phase-item.done { border-color: var(--green); background: var(--green-light); }
+  .phase-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800;
+    flex-shrink: 0;
+    font-family: 'Nunito', sans-serif;
+  }
+  .phase-item.active .phase-icon { background: var(--blue); color: white; }
+  .phase-item.done .phase-icon { background: var(--green); color: white; }
+  .phase-item.locked .phase-icon { background: var(--gray2); color: var(--text3); }
+  .phase-name { font-size: 14px; font-weight: 700; }
+  .phase-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border-radius: var(--radius);
+    border: none;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color: white;
+    box-shadow: 0 4px 16px rgba(26,111,196,0.35);
+  }
+  .btn-secondary {
+    background: white;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    box-shadow: var(--shadow);
+  }
+  .btn-green {
+    background: linear-gradient(135deg, #1e7d45, var(--green));
+    color: white;
+    box-shadow: 0 4px 16px rgba(46,158,91,0.3);
+  }
+
+  /* QUIZ */
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .back-btn {
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .quiz-meta { flex: 1; }
+  .quiz-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .phase-badge {
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .q-counter { font-size: 13px; color: var(--text2); font-weight: 700; }
+
+  .question-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .q-cat {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .q-cat::before { content: ''; display: block; width: 4px; height: 14px; background: var(--blue); border-radius: 2px; }
+  .q-text {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .q-hint {
+    background: var(--amber-light);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 0;
+  }
+
+  .choices { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .choice-btn {
+    background: white;
+    border: 1.5px solid var(--gray2);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    box-shadow: var(--shadow);
+    line-height: 1.4;
+  }
+  .choice-btn:active { transform: scale(0.98); }
+  .choice-btn.correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .choice-btn.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .choice-btn:disabled { cursor: default; }
+
+  .feedback {
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 12px;
+    line-height: 1.65;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .feedback.correct { background: var(--green-light); border: 1.5px solid #a3d9b8; }
+  .feedback.wrong { background: var(--red-light); border: 1.5px solid #f5b0b0; }
+  .feedback-title { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+  .feedback.correct .feedback-title { color: var(--green); }
+  .feedback.wrong .feedback-title { color: var(--red); }
+  .feedback-explain { font-size: 14px; color: var(--text2); }
+  .feedback.correct .feedback-explain { color: #1e7d45; }
+  .feedback.wrong .feedback-explain { color: #a32020; }
+
+  /* RESULT */
+  .result-header {
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    text-align: center;
+    color: white;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-lg);
+  }
+  .result-icon { font-size: 48px; margin-bottom: 8px; }
+  .result-title { font-family: 'Nunito', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .result-msg { font-size: 14px; opacity: 0.9; line-height: 1.5; }
+  .score-row { display: flex; justify-content: center; align-items: baseline; gap: 4px; margin: 12px 0; }
+  .score-big { font-family: 'Nunito', sans-serif; font-size: 52px; font-weight: 800; }
+  .score-denom { font-size: 18px; opacity: 0.8; }
+
+  .wrong-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray2);
+  }
+  .wrong-item:last-child { border-bottom: none; }
+  .wrong-cat { font-size: 11px; color: var(--text3); font-weight: 700; }
+  .wrong-q { font-size: 13px; color: var(--text); margin: 2px 0; }
+  .wrong-ans { font-size: 13px; color: var(--green); font-weight: 700; }
+
+  /* PROGRESS */
+  .progress-screen-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .cat-row { margin-bottom: 12px; }
+  .cat-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .cat-name { font-size: 14px; font-weight: 700; }
+  .cat-rate { font-size: 14px; font-weight: 800; }
+  .rate-good { color: var(--green); }
+  .rate-mid { color: var(--amber); }
+  .rate-low { color: var(--red); }
+
+  .tip-box {
+    background: var(--blue-light);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--blue-dark);
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .next-phase-banner {
+    background: linear-gradient(135deg, #1e7d45, var(--green));
+    border-radius: var(--radius);
+    padding: 16px;
+    color: white;
+    text-align: center;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 16px rgba(46,158,91,0.3);
+    animation: fadeIn 0.4s ease;
+  }
+  .next-phase-banner h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .next-phase-banner p { font-size: 13px; opacity: 0.9; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="home-header">
+      <h1>英語トレーニング</h1>
+      <p>中3一学期 評定4を目指そう！ 🎣</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-val" id="home-correct">0</div>
+        <div class="stat-lbl">正解数</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="home-rate">—</div>
+        <div class="stat-lbl">正答率</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="home-streak">0</div>
+        <div class="stat-lbl">連続正解</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">現在のフェーズ</div>
+      <div id="phase-list"></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startSession()">今日の練習をスタート ▶</button>
+    <button class="btn btn-secondary" onclick="showScreen('progress')">成績レポートを見る</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="screen">
+    <div class="quiz-header">
+      <button class="back-btn" onclick="showScreen('home')">←</button>
+      <div class="quiz-meta">
+        <div class="quiz-top-row">
+          <span class="phase-badge" id="quiz-badge">Phase 1</span>
+          <span class="q-counter" id="quiz-counter">1 / 10</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="quiz-prog" style="width:10%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-cat" id="q-cat"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="q-hint" id="q-hint"></div>
+    </div>
+
+    <div class="choices" id="q-choices"></div>
+    <div id="q-feedback" style="display:none;"></div>
+    <button class="btn btn-primary" id="next-btn" style="display:none;margin-top:12px;" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" class="screen">
+    <div class="result-header">
+      <div class="result-icon" id="result-icon">🏆</div>
+      <div class="result-title" id="result-title">セッション完了！</div>
+      <div class="score-row">
+        <span class="score-big" id="result-score">0</span>
+        <span class="score-denom" id="result-denom">/ 10問</span>
+      </div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+
+    <div id="next-phase-banner" style="display:none;">
+      <div class="next-phase-banner">
+        <h3>🎉 フェーズクリア！</h3>
+        <p id="next-phase-msg"></p>
+      </div>
+    </div>
+
+    <div class="card" id="wrong-card" style="display:none;">
+      <div class="card-title">間違えた問題の答え</div>
+      <div id="wrong-list"></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="showScreen('home')">ホームへ戻る 🏠</button>
+    <button class="btn btn-secondary" id="retry-btn" style="display:none;" onclick="retryWrong()">間違えた問題を復習する 🔄</button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div id="progress" class="screen">
+    <div class="progress-screen-header">
+      <button class="back-btn" onclick="showScreen('home')">←</button>
+      <h2 style="font-size:18px;font-weight:800;">成績レポート</h2>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="stat"><div class="stat-val" id="prog-total">0</div><div class="stat-lbl">総問題数</div></div>
+      <div class="stat"><div class="stat-val" id="prog-correct2">0</div><div class="stat-lbl">正解数</div></div>
+      <div class="stat"><div class="stat-val" id="prog-rate">0%</div><div class="stat-lbl">正答率</div></div>
+      <div class="stat"><div class="stat-val" id="prog-streak2">0</div><div class="stat-lbl">最大連続</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">カテゴリ別成績</div>
+      <div id="cat-stats-list"></div>
+    </div>
+
+    <div class="tip-box">評定4の目安：定期テスト70点以上！<br>正答率80%を目指してトレーニングしよう💪</div>
+    <button class="btn btn-primary" onclick="showScreen('home')">ホームへ戻る</button>
+  </div>
+
+</div>
+
+<script>
+const PHASES = [
+  { id:1, name:'Phase 1 — 基礎固め', desc:'現在完了形の土台を作る（2週間）' },
+  { id:2, name:'Phase 2 — 定着', desc:'3用法を使い分ける（2週間）' },
+  { id:3, name:'Phase 3 — 実践', desc:'テスト形式で仕上げ（2週間）' }
+];
+
+const ALL_Q = [
+  {phase:1,cat:'不規則動詞',q:'ラグビーボールを「投げる」はthrow。過去分詞は？',hint:'ヒント：試合でパスがthrown（投げられた）！',choices:['throwed','threw','thrown','throw'],ans:2,explain:'throwの変化はthrow → threw → thrown！不規則動詞だよ。試合でパスがthrown（投げられた）とイメージしよう🏉'},
+  {phase:1,cat:'不規則動詞',q:'「釣る・捕まえる」catchの過去分詞は？',hint:'ヒント：今日は大きな魚を＿＿！',choices:['catched','caught','caughted','catch'],ans:1,explain:'catchはcatch → caught → caught。過去形と過去分詞が同じ！大きな魚をcaught（釣れた）🎣'},
+  {phase:1,cat:'不規則動詞',q:'「見る」seeの過去分詞は？',hint:'ヒント：その景色を一度も＿＿ことがない',choices:['saw','seed','seen','see'],ans:2,explain:'seeはsee → saw → seen。過去分詞はseen！「シーン（場面）を見た」と覚えよう👁'},
+  {phase:1,cat:'不規則動詞',q:'「書く」writeの過去分詞は？',hint:'ヒント：この手紙は誰かによって＿＿た',choices:['wrote','writed','written','write'],ans:2,explain:'writeはwrite → wrote → written。過去分詞はwritten！テストに出たやつだよ。ダブルnに注意✍'},
+  {phase:1,cat:'不規則動詞',q:'「買う」buyの過去分詞は？',hint:'ヒント：もうチケットを＿＿した！',choices:['buyed','bought','buied','buy'],ans:1,explain:'buyはbuy → bought → bought。過去形と過去分詞が同じ！「バイト（買った）」で覚えよう💰'},
+  {phase:1,cat:'現在完了・基本',q:'「私はラグビーをしたことがある」を英語にすると？',hint:'ヒント：経験を言うとき → have + 過去分詞！',choices:['I played rugby.','I have played rugby.','I had played rugby.','I play rugby.'],ans:1,explain:'経験を言うときは have + 過去分詞！I have played rugby. これが現在完了の基本形🏉 「今まで〜したことがある」＝have/has＋過去分詞だよ！'},
+  {phase:1,cat:'現在完了・基本',q:'「トモコはもうその本を買った」は？（模範解答）',hint:'ヒント：already（もう）を使う。has + bought',choices:['Tomoko already bought the book.','Tomoko has already bought the book.','Tomoko have already bought the book.','Tomoko had already bought the book.'],ans:1,explain:'「もう〜した」（完了）はhas/have + already + 過去分詞！主語がTomoko（3人称単数）だからhasを使うよ✨'},
+  {phase:1,cat:'現在完了・否定',q:'「私は長い間彼女に会っていない」の正しい英語は？',hint:'ヒント：否定はhaven\'t + 過去分詞。meetの過去分詞はmet！',choices:['I haven\'t meet her for a long time.','I haven\'t met her for a long time.','I don\'t met her for a long time.','I didn\'t meet her for a long time.'],ans:1,explain:'現在完了の否定はhaven\'t/hasn\'t＋過去分詞。meetの過去分詞はmet（meetではない！）。テストで同じ間違いをしてたよ💪'},
+  {phase:1,cat:'現在完了・疑問',q:'「あなたはラグビーをしたことがありますか？」は？',hint:'ヒント：疑問文はHave/Has + 主語 + 過去分詞？',choices:['Do you have played rugby?','Did you play rugby?','Have you played rugby?','Are you played rugby?'],ans:2,explain:'現在完了の疑問文はHave/Has＋主語＋過去分詞？ Have you played rugby? が正解！答え方はYes, I have. / No, I haven\'t.だよ🏉'},
+  {phase:1,cat:'現在完了・never',q:'（　）に入るのは？ I have ( ) fished in that river.',hint:'ヒント：「一度も〜ない」という強い否定の単語',choices:['not','never','no','don\'t'],ans:1,explain:'neverは「一度も〜ない」という強い否定！I have never fished in that river. ラグビーや釣りの話で使えるね🎣'},
+  {phase:2,cat:'継続用法・for',q:'「私は3年間ずっとラグビーをしている」は？',hint:'ヒント：継続用法。for＋期間を使う！',choices:['I play rugby for three years.','I played rugby for three years.','I have played rugby for three years.','I am playing rugby for three years.'],ans:2,explain:'「ずっと〜している（継続）」はhave/has＋過去分詞＋for＋期間。I have played rugby for three years.🏉'},
+  {phase:2,cat:'継続用法・since',q:'「彼は10歳のときからずっと釣りが好きだ」の（　）は？ He ( ) liked fishing since he was ten.',hint:'ヒント：主語がheだから？sinceは「〜から（ずっと）」',choices:['have','has','had','is'],ans:1,explain:'主語がhe（3人称単数）なのでhasを使う！sinceは「〜のときから」。for＋期間、since＋時点、この違いを覚えよう🎣'},
+  {phase:2,cat:'疑問文・How long',q:'「あなたはどのくらいの間ラグビーをしていますか？」は？',hint:'ヒント：期間を聞くときはHow long〜？',choices:['How long do you play rugby?','How long have you played rugby?','How long did you play rugby?','How long are you playing rugby?'],ans:1,explain:'期間を聞く疑問文はHow long have/has＋主語＋過去分詞？ How long have you played rugby? テストの大問10と同じパターン！'},
+  {phase:2,cat:'疑問文・How many times',q:'「彼は何回その川に釣りに行ったことがありますか？」は？',hint:'ヒント：回数を聞くときはHow many times〜？',choices:['How many time has he gone fishing?','How many times has he go fishing?','How many times has he gone fishing?','How many times have he gone fishing?'],ans:2,explain:'回数を聞くときはHow many times has/have＋主語＋過去分詞？ goの過去分詞はgone。主語がheなのでhas。テスト大問10のパターンだ！'},
+  {phase:2,cat:'疑問文への答え方',q:'Have you ever caught a big fish? への正しい答えは？',hint:'ヒント：現在完了の疑問文への答え方',choices:['Yes, I did.','Yes, I have.','Yes, I had.','Yes, I do.'],ans:1,explain:'Have you ever〜?への答えはYes, I have. / No, I haven\'t. 現在完了の疑問文にはhaveで答えるよ！大問7でこのパターンが出てたね'},
+  {phase:2,cat:'that節',q:'「ノリコは私たちに数学を勉強することが大切だと言う」は？',hint:'ヒント：tell + 人 + that + 文。studying（動名詞）を主語にする！',choices:['Noriko told we study math is important.','Noriko tells us that studying math is important.','Noriko tell us that study math is important.','Noriko told us that to study math was important.'],ans:1,explain:'Noriko tells us that studying math is important.が正解！tellsは現在形、thatの後でstudying（動名詞）が主語になるよ✨大問9(3)の問題！'},
+  {phase:3,cat:'並び替え',q:'次の語を並べ替えよう。 [ already / has / bought / Tomoko / book / the ]',hint:'ヒント：Tomoko＋has＋already＋動詞の過去分詞',choices:['Tomoko already has bought the book.','Tomoko has already bought the book.','Tomoko has bought already the book.','Already Tomoko has bought the book.'],ans:1,explain:'語順はTomoko＋has＋already＋bought＋the book。alreadyはhas/haveと過去分詞の間に入るよ！大問9(1)の問題だ🏆'},
+  {phase:3,cat:'並び替え',q:'「私はそれ以来ずっとそれに興味を持っている」 I ( ) ( ) ( ) ( ) since then.',hint:'ヒント：have＋been＋interested＋in＋it',choices:['have interested been in it','have been interested in it','been have in interested it','have in been interested it'],ans:1,explain:'I have been interested in it since then. 「〜に興味を持っている」はbe interested in。現在完了でhave been interested in。大問11のパターン！'},
+  {phase:3,cat:'英作文',q:'「私は一度もスコットランドに行ったことがない」は？',hint:'ヒント：never＋been to〜。goの経験用法はbeen to',choices:['I have never gone to Scotland.','I never go to Scotland.','I have never been to Scotland.','I didn\'t never go to Scotland.'],ans:2,explain:'「〜に行ったことがない」はhave never been to〜。I have never been to Scotland. been toは「〜に行ったことがある（経験）」だよ🌍'},
+  {phase:3,cat:'総合・yet',q:'「彼はまだ宿題を終わらせていない」は？（yetを使う）',hint:'ヒント：否定文でのyet（まだ〜していない）の位置は文末！',choices:['He hasn\'t finished his homework already.','He hasn\'t yet finished his homework.','He hasn\'t finished his homework yet.','He don\'t finish his homework yet.'],ans:2,explain:'yetは否定文では「まだ」という意味で文末に置く！He hasn\'t finished his homework yet. 大問6でyetが出てたね✨'}
+];
+
+const CORRECT_MSGS = [
+  '最高！やるじゃないか！🏉','その調子！正解！🎣','ナイス！しっかり覚えてるね！✨','素晴らしい！どんどん伸びてる！💪','完璧！感覚つかんできたね！🎯','よし！この調子で行こう！🔥','完璧な正解！本物の実力だ！🏆'
+];
+
+let S = {
+  totalCorrect:0, totalAnswered:0,
+  maxStreak:0, currentStreak:0,
+  currentPhase:1,
+  sessionQs:[], currentIdx:0,
+  sessionCorrect:0, sessionAnswered:0,
+  answered:false, wrongQs:[],
+  catStats:{},
+  phaseCleared:[]
+};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='home') renderHome();
+  if(id==='progress') renderProgress();
+  window.scrollTo(0,0);
+}
+
+function renderHome() {
+  document.getElementById('home-correct').textContent = S.totalCorrect;
+  document.getElementById('home-streak').textContent = S.maxStreak;
+  const rate = S.totalAnswered ? Math.round(S.totalCorrect/S.totalAnswered*100)+'%' : '—';
+  document.getElementById('home-rate').textContent = rate;
+  const list = document.getElementById('phase-list');
+  list.innerHTML = PHASES.map(p => {
+    const done = S.phaseCleared.includes(p.id);
+    const active = p.id === S.currentPhase;
+    const locked = p.id > S.currentPhase && !done;
+    const cls = done ? 'done' : active ? 'active' : 'locked';
+    const icon = done ? '✓' : p.id.toString();
+    return `<div class="phase-item ${cls}"><div class="phase-icon">${icon}</div><div><div class="phase-name">${p.name}</div><div class="phase-desc">${p.desc}</div></div></div>`;
+  }).join('');
+}
+
+function startSession() {
+  const phaseQs = ALL_Q.filter(q => q.phase === S.currentPhase);
+  S.sessionQs = shuffle([...phaseQs]).slice(0, Math.min(10, phaseQs.length));
+  S.currentIdx = 0; S.sessionCorrect = 0; S.sessionAnswered = 0;
+  S.answered = false; S.wrongQs = [];
+  document.getElementById('quiz-badge').textContent = 'Phase ' + S.currentPhase;
+  showScreen('quiz');
+  loadQ();
+}
+
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+
+function loadQ() {
+  const q = S.sessionQs[S.currentIdx];
+  const total = S.sessionQs.length;
+  S.answered = false;
+  document.getElementById('quiz-counter').textContent = (S.currentIdx+1)+' / '+total;
+  document.getElementById('quiz-prog').style.width = Math.round((S.currentIdx+1)/total*100)+'%';
+  document.getElementById('q-cat').textContent = q.cat;
+  document.getElementById('q-text').textContent = q.q;
+  const hintEl = document.getElementById('q-hint');
+  hintEl.textContent = q.hint || '';
+  hintEl.style.display = q.hint ? 'block' : 'none';
+  document.getElementById('q-feedback').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+  const choicesEl = document.getElementById('q-choices');
+  choicesEl.innerHTML = q.choices.map((c,i) =>
+    `<button class="choice-btn" onclick="answer(${i})">${c}</button>`
+  ).join('');
+}
+
+function answer(idx) {
+  if(S.answered) return;
+  S.answered = true;
+  const q = S.sessionQs[S.currentIdx];
+  const correct = idx === q.ans;
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  document.querySelectorAll('.choice-btn')[q.ans].classList.add('correct');
+  if(!correct) document.querySelectorAll('.choice-btn')[idx].classList.add('wrong');
+  S.sessionAnswered++; S.totalAnswered++;
+  const fb = document.getElementById('q-feedback');
+  fb.style.display = 'block';
+  if(correct) {
+    S.sessionCorrect++; S.totalCorrect++; S.currentStreak++;
+    if(S.currentStreak > S.maxStreak) S.maxStreak = S.currentStreak;
+    const msg = CORRECT_MSGS[Math.floor(Math.random()*CORRECT_MSGS.length)];
+    fb.className = 'feedback correct';
+    fb.innerHTML = `<div class="feedback-title">${msg}</div><div class="feedback-explain">${q.explain}</div>`;
+    catStat(q.cat, true);
+  } else {
+    S.currentStreak = 0; S.wrongQs.push(q);
+    fb.className = 'feedback wrong';
+    fb.innerHTML = `<div class="feedback-title">惜しい！正解は「${q.choices[q.ans]}」だよ</div><div class="feedback-explain">${q.explain}</div>`;
+    catStat(q.cat, false);
+  }
+  document.getElementById('next-btn').style.display = 'block';
+  document.getElementById('home-correct').textContent = S.totalCorrect;
+  document.getElementById('home-streak').textContent = S.maxStreak;
+}
+
+function catStat(cat, ok) {
+  if(!S.catStats[cat]) S.catStats[cat]={correct:0,total:0};
+  S.catStats[cat].total++;
+  if(ok) S.catStats[cat].correct++;
+}
+
+function nextQuestion() {
+  S.currentIdx++;
+  if(S.currentIdx >= S.sessionQs.length) showResult();
+  else loadQ();
+}
+
+function showResult() {
+  showScreen('result');
+  const score = S.sessionCorrect, total = S.sessionAnswered;
+  const rate = Math.round(score/total*100);
+  document.getElementById('result-score').textContent = score;
+  document.getElementById('result-denom').textContent = '/ '+total+'問';
+  let icon, title, msg;
+  if(rate>=90){icon='🏆';title='最高の出来！';msg='ほぼ満点！この調子でどんどん進もう。ラグビーも勉強も全力で！🏉';}
+  else if(rate>=70){icon='⭐';title='よくできました！';msg='評定4に着実に近づいてるよ！間違えた問題を復習しよう🎣';}
+  else if(rate>=50){icon='💪';title='もう少し！';msg='半分以上できた！間違えた問題をしっかり復習すれば、すぐ伸びるよ！';}
+  else{icon='📖';title='基礎から確認しよう';msg='現在完了形の基本をもう一度確認しよう。繰り返せば必ず伸びるよ！';}
+  document.getElementById('result-icon').textContent = icon;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+  const banner = document.getElementById('next-phase-banner');
+  if(rate>=80 && S.currentPhase<3 && !S.phaseCleared.includes(S.currentPhase)) {
+    S.phaseCleared.push(S.currentPhase);
+    S.currentPhase++;
+    banner.style.display = 'block';
+    document.getElementById('next-phase-msg').textContent = 'Phase '+S.currentPhase+' に進もう！';
+  } else { banner.style.display='none'; }
+  const wrongCard = document.getElementById('wrong-card');
+  if(S.wrongQs.length>0){
+    wrongCard.style.display='block';
+    document.getElementById('wrong-list').innerHTML = S.wrongQs.map(q =>
+      `<div class="wrong-item"><div class="wrong-cat">${q.cat}</div><div class="wrong-q">${q.q.substring(0,45)}...</div><div class="wrong-ans">→ ${q.choices[q.ans]}</div></div>`
+    ).join('');
+    document.getElementById('retry-btn').style.display='block';
+  } else {
+    wrongCard.style.display='none';
+    document.getElementById('retry-btn').style.display='none';
+  }
+}
+
+function retryWrong() {
+  S.sessionQs = [...S.wrongQs];
+  S.currentIdx=0; S.sessionCorrect=0; S.sessionAnswered=0;
+  S.answered=false; S.wrongQs=[];
+  showScreen('quiz');
+  loadQ();
+}
+
+function renderProgress() {
+  document.getElementById('prog-total').textContent = S.totalAnswered;
+  document.getElementById('prog-correct2').textContent = S.totalCorrect;
+  const rate = S.totalAnswered ? Math.round(S.totalCorrect/S.totalAnswered*100) : 0;
+  document.getElementById('prog-rate').textContent = rate+'%';
+  document.getElementById('prog-streak2').textContent = S.maxStreak;
+  const el = document.getElementById('cat-stats-list');
+  if(!Object.keys(S.catStats).length){
+    el.innerHTML='<p style="color:#8a9099;font-size:14px;">まだデータがありません。問題を解いてみよう！</p>';
+    return;
+  }
+  el.innerHTML = Object.entries(S.catStats).map(([cat,s]) => {
+    const r = Math.round(s.correct/s.total*100);
+    const col = r>=80?'#2e9e5b':r>=60?'#e07c00':'#d63b3b';
+    const cls = r>=80?'rate-good':r>=60?'rate-mid':'rate-low';
+    return `<div class="cat-row"><div class="cat-top"><span class="cat-name">${cat}</span><span class="cat-rate ${cls}">${r}%（${s.correct}/${s.total}）</span></div><div class="progress-bar"><div style="height:100%;width:${r}%;background:${col};border-radius:5px;transition:width 0.5s;"></div></div></div>`;
+  }).join('');
+}
+
+renderHome();
+</script>
+</body>
+</html>
